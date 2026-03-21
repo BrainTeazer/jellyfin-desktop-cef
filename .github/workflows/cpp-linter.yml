@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y mpv libvulkan1 libvulkan-dev vulkan-tools
+          sudo apt-get install -y mpv libvulkan1 libvulkan-dev vulkan-tools wayland-protocols
 
       - name: Run Ninja
         run: | 
