@@ -2,11 +2,12 @@
 #define LOGGING_H
 
 #include <SDL3/SDL_log.h>
+#include <cstdint>
 #include <cstring>
 #include <string>
 
 // Custom log categories (SDL_LOG_CATEGORY_CUSTOM = 19)
-enum LogCategory {
+enum LogCategory : std::uint8_t {
     LOG_MAIN       = SDL_LOG_CATEGORY_APPLICATION,
     LOG_MPV        = SDL_LOG_CATEGORY_CUSTOM,
     LOG_CEF        = SDL_LOG_CATEGORY_CUSTOM + 1,
