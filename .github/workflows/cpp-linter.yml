@@ -12,7 +12,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y sdl3 mpv vulkan-headers
+          sudo apt-get install -y libsdl3-dev mpv
       - name: Run Ninja
         run: | 
           git submodule update --init --recursive
