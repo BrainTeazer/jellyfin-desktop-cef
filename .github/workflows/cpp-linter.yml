@@ -1,0 +1,26 @@
+name: cpp-linter
+on:
+  pull_request: 
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  cpp-linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cpp-linter/cpp-linter-action@v2
+        id: linter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          style: 'file' # Use .clang-format config file
+          tidy-checks: '' # Use .clang-tidy config file
+          lines-changed-only: true
+          files-changed-only: true
+
+
+      - name: Failure
+        if: steps.linear.outputs.checks-failed > 0
+        run: exit 1
