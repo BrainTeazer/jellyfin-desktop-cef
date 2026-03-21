@@ -1,13 +1,34 @@
 name: cpp-linter
 on:
   pull_request: 
-    branches: [main]
+    branches: [ main ]
 
 jobs:
-  cpp-linter:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Run Ninja
+        run: | 
+          cmake -B build -G Ninja
+          cmake --build build
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: build/
+
+  cpp-linter:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Download build artificats
+        uses: actions/download-artifact@v3
+        with:
+          name: build-output
+          path: build/
+
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
         env:
@@ -20,5 +41,5 @@ jobs:
 
 
       - name: Failure
-        if: steps.linear.outputs.checks-failed > 0
+        if: steps.linter.outputs.checks-failed > 0
         run: exit 1
