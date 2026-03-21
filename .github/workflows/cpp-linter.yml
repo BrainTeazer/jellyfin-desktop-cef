@@ -13,7 +13,7 @@ jobs:
           cmake -B build -G Ninja
           cmake --build build
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v6
         with:
           name: build-output
           path: build/
@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Download build artificats
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v6
         with:
           name: build-output
           path: build/
