@@ -35,31 +35,31 @@ public:
     void cleanup() override;
 
     // Not used — mpv handles frame acquisition/presentation via pl_swapchain
-    [[nodiscard]] bool startFrame(VkImage*, VkImageView*, VkFormat*) override { return false; }
+    [[nodiscard]] bool startFrame(VkImage* /*outImage*/, VkImageView* /*outView*/, VkFormat* /*outFormat*/) override { return false; }
     void submitFrame() override {}
 
     // Accessors
-    [[nodiscard]] wl_display* display() const { return wl_display_; }
-    [[nodiscard]] wl_surface* surface() const { return mpv_surface_; }
+    [[nodiscard]] wl_display* display() const { return m_wl_display; }
+    [[nodiscard]] wl_surface* surface() const { return m_mpv_surface; }
     [[nodiscard]] VkFormat    swapchainFormat() const override { return VK_FORMAT_UNDEFINED; }
-    [[nodiscard]] VkExtent2D  swapchainExtent() const override { return swapchain_extent_; }
+    [[nodiscard]] VkExtent2D  swapchainExtent() const override { return m_swapchain_extent; }
     [[nodiscard]] bool        isHdr() const override { return true; }
-    [[nodiscard]] uint32_t    width() const override { return swapchain_extent_.width; }
-    [[nodiscard]] uint32_t    height() const override { return swapchain_extent_.height; }
+    [[nodiscard]] uint32_t    width() const override { return m_swapchain_extent.width; }
+    [[nodiscard]] uint32_t    height() const override { return m_swapchain_extent.height; }
 
     // Vulkan handles for mpv
-    [[nodiscard]] VkInstance                       vkInstance() const override { return instance_; }
-    [[nodiscard]] VkPhysicalDevice                 vkPhysicalDevice() const override { return physical_device_; }
-    [[nodiscard]] VkDevice                         vkDevice() const override { return device_; }
+    [[nodiscard]] VkInstance                       vkInstance() const override { return m_instance; }
+    [[nodiscard]] VkPhysicalDevice                 vkPhysicalDevice() const override { return m_physical_device; }
+    [[nodiscard]] VkDevice                         vkDevice() const override { return m_device; }
     [[nodiscard]] VkQueue                          vkQueue() const override;
     [[nodiscard]] uint32_t                         vkQueueFamily() const override;
     [[nodiscard]] PFN_vkGetInstanceProcAddr        vkGetProcAddr() const override { return vkGetInstanceProcAddr; }
-    [[nodiscard]] const VkPhysicalDeviceFeatures2* features() const override { return &features2_; }
+    [[nodiscard]] const VkPhysicalDeviceFeatures2* features() const override { return &m_features2; }
     [[nodiscard]] const char* const*               deviceExtensions() const override;
     [[nodiscard]] int                              deviceExtensionCount() const override;
 
-    [[nodiscard]] VkSurfaceKHR               vkSurface() const { return vk_surface_; }
-    [[nodiscard]] const mpv_display_profile& displayProfile() const { return display_profile_; }
+    [[nodiscard]] VkSurfaceKHR               vkSurface() const { return m_vk_surface; }
+    [[nodiscard]] const mpv_display_profile& displayProfile() const { return m_display_profile; }
 
     void commit();
     void hide() override;
@@ -75,34 +75,34 @@ private:
     [[nodiscard]] bool createSubsurface(wl_surface* parentSurface);
     void queryDisplayProfile();
 
-    wl_display*       wl_display_       = nullptr;
-    wl_compositor*    wl_compositor_    = nullptr;
-    wl_subcompositor* wl_subcompositor_ = nullptr;
-    wl_surface*       mpv_surface_      = nullptr;
-    wl_subsurface*    mpv_subsurface_   = nullptr;
+    wl_display*       m_wl_display       = nullptr;
+    wl_compositor*    m_wl_compositor    = nullptr;
+    wl_subcompositor* m_wl_subcompositor = nullptr;
+    wl_surface*       m_mpv_surface      = nullptr;
+    wl_subsurface*    m_mpv_subsurface   = nullptr;
 
-    wp_viewporter* viewporter_ = nullptr;
-    wp_viewport*   viewport_   = nullptr;
+    wp_viewporter* m_viewporter = nullptr;
+    wp_viewport*   m_viewport   = nullptr;
 
-    VkInstance       instance_        = VK_NULL_HANDLE;
-    VkPhysicalDevice physical_device_ = VK_NULL_HANDLE;
-    VkDevice         device_          = VK_NULL_HANDLE;
-    VkQueue          queue_           = VK_NULL_HANDLE;
-    uint32_t         queue_family_    = 0;
-    VkSurfaceKHR     vk_surface_      = VK_NULL_HANDLE;
+    VkInstance       m_instance        = VK_NULL_HANDLE;
+    VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
+    VkDevice         m_device          = VK_NULL_HANDLE;
+    VkQueue          m_queue           = VK_NULL_HANDLE;
+    uint32_t         m_queue_family    = 0;
+    VkSurfaceKHR     m_vk_surface      = VK_NULL_HANDLE;
 
-    VkPhysicalDeviceVulkan11Features vk11_features_{};
-    VkPhysicalDeviceVulkan12Features vk12_features_{};
-    VkPhysicalDeviceFeatures2        features2_{};
-    std::vector<const char*>         enabled_extensions_;
+    VkPhysicalDeviceVulkan11Features m_vk11_features{};
+    VkPhysicalDeviceVulkan12Features m_vk12_features{};
+    VkPhysicalDeviceFeatures2        m_features2{};
+    std::vector<const char*>         m_enabled_extensions;
 
-    wp_color_manager_v1* color_manager_   = nullptr;
-    wl_output*           wl_output_       = nullptr;
-    mpv_display_profile  display_profile_ = {};
+    wp_color_manager_v1* m_color_manager   = nullptr;
+    wl_output*           m_wl_output       = nullptr;
+    mpv_display_profile  m_display_profile = {};
 
-    VkExtent2D swapchain_extent_ = {0, 0};
+    VkExtent2D m_swapchain_extent = {.width=0, .height=0};
 
-    std::atomic<int>  pending_dest_width_{0};
-    std::atomic<int>  pending_dest_height_{0};
-    std::atomic<bool> dest_pending_{false};
+    std::atomic<int>  m_pending_dest_width{0};
+    std::atomic<int>  m_pending_dest_height{0};
+    std::atomic<bool> m_dest_pending{false};
 };
