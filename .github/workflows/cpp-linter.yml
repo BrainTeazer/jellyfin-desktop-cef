@@ -4,7 +4,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  cpp-linter:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -26,36 +26,12 @@ jobs:
             libavcodec-dev libavformat-dev libavfilter-dev \
             libass-dev libwayland-dev
 
-      - name: Run Ninja
+      - name: Download and generate dependencies, and build
         run: | 
           git submodule update --init --recursive
           python3 dev/download_cef.py
           cmake -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           cmake --build build
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v6
-        with:
-          name: build-output
-          path: build/
-
-  cpp-linter:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: libsdl-org/setup-sdl@main
-        id: sdl
-        with:
-          install-linux-dependencies: true
-          version: 3-latest
-          version-sdl-image: 3-latest
-
-      - name: Download build artificats
-        uses: actions/download-artifact@v6
-        with:
-          name: build-output
-          path: build/
 
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
@@ -69,6 +45,6 @@ jobs:
           files-changed-only: true
 
 
-      - name: Failure
+      - name: cpp-linter contains failed checks
         if: steps.linter.outputs.checks-failed > 0
         run: exit 1
