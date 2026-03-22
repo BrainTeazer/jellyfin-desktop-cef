@@ -22,7 +22,7 @@ public:
     WaylandSubsurface();
     ~WaylandSubsurface() override;
 
-    bool init(SDL_Window*                      window,
+    [[nodiscard]] bool init(SDL_Window*                      window,
               VkInstance                       instance,
               VkPhysicalDevice                 physicalDevice,
               VkDevice                         device,
@@ -30,36 +30,36 @@ public:
               const char* const*               extensions,
               int                              numExtensions,
               const VkPhysicalDeviceFeatures2* features) override;
-    bool createSwapchain(int width, int height) override;
-    bool recreateSwapchain(int width, int height) override;
+    [[nodiscard]] bool createSwapchain(int width, int height) override;
+    [[nodiscard]] bool recreateSwapchain(int width, int height) override;
     void cleanup() override;
 
     // Not used — mpv handles frame acquisition/presentation via pl_swapchain
-    bool startFrame(VkImage*, VkImageView*, VkFormat*) override { return false; }
+    [[nodiscard]] bool startFrame(VkImage*, VkImageView*, VkFormat*) override { return false; }
     void submitFrame() override {}
 
     // Accessors
-    wl_display* display() const { return wl_display_; }
-    wl_surface* surface() const { return mpv_surface_; }
-    VkFormat    swapchainFormat() const override { return VK_FORMAT_UNDEFINED; }
-    VkExtent2D  swapchainExtent() const override { return swapchain_extent_; }
-    bool        isHdr() const override { return true; }
-    uint32_t    width() const override { return swapchain_extent_.width; }
-    uint32_t    height() const override { return swapchain_extent_.height; }
+    [[nodiscard]] wl_display* display() const { return wl_display_; }
+    [[nodiscard]] wl_surface* surface() const { return mpv_surface_; }
+    [[nodiscard]] VkFormat    swapchainFormat() const override { return VK_FORMAT_UNDEFINED; }
+    [[nodiscard]] VkExtent2D  swapchainExtent() const override { return swapchain_extent_; }
+    [[nodiscard]] bool        isHdr() const override { return true; }
+    [[nodiscard]] uint32_t    width() const override { return swapchain_extent_.width; }
+    [[nodiscard]] uint32_t    height() const override { return swapchain_extent_.height; }
 
     // Vulkan handles for mpv
-    VkInstance                       vkInstance() const override { return instance_; }
-    VkPhysicalDevice                 vkPhysicalDevice() const override { return physical_device_; }
-    VkDevice                         vkDevice() const override { return device_; }
-    VkQueue                          vkQueue() const override;
-    uint32_t                         vkQueueFamily() const override;
-    PFN_vkGetInstanceProcAddr        vkGetProcAddr() const override { return vkGetInstanceProcAddr; }
-    const VkPhysicalDeviceFeatures2* features() const override { return &features2_; }
-    const char* const*               deviceExtensions() const override;
-    int                              deviceExtensionCount() const override;
+    [[nodiscard]] VkInstance                       vkInstance() const override { return instance_; }
+    [[nodiscard]] VkPhysicalDevice                 vkPhysicalDevice() const override { return physical_device_; }
+    [[nodiscard]] VkDevice                         vkDevice() const override { return device_; }
+    [[nodiscard]] VkQueue                          vkQueue() const override;
+    [[nodiscard]] uint32_t                         vkQueueFamily() const override;
+    [[nodiscard]] PFN_vkGetInstanceProcAddr        vkGetProcAddr() const override { return vkGetInstanceProcAddr; }
+    [[nodiscard]] const VkPhysicalDeviceFeatures2* features() const override { return &features2_; }
+    [[nodiscard]] const char* const*               deviceExtensions() const override;
+    [[nodiscard]] int                              deviceExtensionCount() const override;
 
-    VkSurfaceKHR               vkSurface() const { return vk_surface_; }
-    const mpv_display_profile& displayProfile() const { return display_profile_; }
+    [[nodiscard]] VkSurfaceKHR               vkSurface() const { return vk_surface_; }
+    [[nodiscard]] const mpv_display_profile& displayProfile() const { return display_profile_; }
 
     void commit();
     void hide() override;
@@ -71,8 +71,8 @@ public:
     static void registryGlobalRemove(void* data, wl_registry* registry, uint32_t name);
 
 private:
-    bool initWayland(SDL_Window* window);
-    bool createSubsurface(wl_surface* parentSurface);
+    [[nodiscard]] bool initWayland(SDL_Window* window);
+    [[nodiscard]] bool createSubsurface(wl_surface* parentSurface);
     void queryDisplayProfile();
 
     wl_display*       wl_display_       = nullptr;
