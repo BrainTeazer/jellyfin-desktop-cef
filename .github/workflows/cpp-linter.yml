@@ -30,7 +30,7 @@ jobs:
         run: | 
           git submodule update --init --recursive
           python3 dev/download_cef.py
-          cmake -B build -G Ninja
+          cmake -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           cmake --build build
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6
