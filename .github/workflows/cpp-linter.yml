@@ -31,7 +31,7 @@ jobs:
           git submodule update --init --recursive
           python3 dev/download_cef.py
           cmake -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-          cmake --build build
+      # cmake --build build
 
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
