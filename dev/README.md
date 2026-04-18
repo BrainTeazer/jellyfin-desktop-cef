@@ -5,7 +5,6 @@
 ```sh
 git clone https://github.com/jellyfin/jellyfin-desktop
 cd jellyfin-desktop
-git submodule update --init --recursive
 python3 dev/download_cef.py
 cmake -B build -G Ninja
 cmake --build build
@@ -17,7 +16,6 @@ cmake --build build
 ```sh
 git clone https://github.com/jellyfin/jellyfin-desktop
 cd jellyfin-desktop
-git submodule update --init --recursive
 python3 dev/download_cef.py
 cmake -B build -G Ninja
 cmake --build build
