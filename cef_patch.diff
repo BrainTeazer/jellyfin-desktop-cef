@@ -1,0 +1,267 @@
+389a390,391
+>   # Equivalent "debug info"
+>   set(CEF_DEBUG_INFO_FLAG "-g" CACHE STRING "Debug info flag")
+391,392c393,394
+<   # Consumers who run into LNK4099 warnings can pass /Z7 instead (see issue #385).
+<   set(CEF_DEBUG_INFO_FLAG "/Zi" CACHE STRING "Optional flag specifying specific /Z flag to use")
+---
+>   # No direct equivalent to /MT in MinGW (uses its own runtime)
+>   set(CEF_RUNTIME_LIBRARY_FLAG "" CACHE STRING "Unused on MinGW")
+394,402c396
+<   # Consumers using different runtime types may want to pass different flags
+<   set(CEF_RUNTIME_LIBRARY_FLAG "/MT" CACHE STRING "Optional flag specifying which runtime to use")
+<   if (CEF_RUNTIME_LIBRARY_FLAG)
+<     list(APPEND CEF_COMPILER_FLAGS_DEBUG ${CEF_RUNTIME_LIBRARY_FLAG}d)
+<     list(APPEND CEF_COMPILER_FLAGS_RELEASE ${CEF_RUNTIME_LIBRARY_FLAG})
+<   endif()
+< 
+<   # Platform-specific compiler/linker flags.
+<   set(CEF_LIBTYPE STATIC)
+---
+>   # Compiler flags
+404,418c398,414
+<     /MP           # Multiprocess compilation
+<     /Gy           # Enable function-level linking
+<     /GF           # Enable string pooling
+<     /GR-          # Disable run-time type information
+<     /W4           # Warning level 4
+<     /WX           # Treat warnings as errors
+<     /wd4100       # Ignore "unreferenced formal parameter" warning
+<     /wd4127       # Ignore "conditional expression is constant" warning
+<     /wd4244       # Ignore "conversion possible loss of data" warning
+<     /wd4324       # Ignore "structure was padded due to alignment specifier" warning
+<     /wd4481       # Ignore "nonstandard extension used: override" warning
+<     /wd4512       # Ignore "assignment operator could not be generated" warning
+<     /wd4701       # Ignore "potentially uninitialized local variable" warning
+<     /wd4702       # Ignore "unreachable code" warning
+<     /wd4996       # Ignore "function or variable may be unsafe" warning
+---
+>     -Wall
+>     -Wextra
+>     -Wpedantic
+>     -Werror
+>     -Wno-gnu-zero-variadic-macro-arguments
+>     -Wno-unused-parameter
+>     -Wno-missing-field-initializers
+>     -Wno-sign-compare
+>     -Wno-deprecated-declarations
+>     -Wno-comment
+>     -fno-strict-aliasing
+>     -fstack-protector
+>     -funwind-tables
+>     -fvisibility=hidden
+>     -fvisibility-inlines-hidden
+>     -pipe
+>     -pthread
+420c416,417
+<     )
+---
+>   )
+> 
+422,424c419,422
+<     /RTC1         # Disable optimizations
+<     /Od           # Enable basic run-time checks
+<     )
+---
+>     -O0
+>     -g
+>   )
+> 
+426,428c424,426
+<     /O2           # Optimize for maximum speed
+<     /Ob2          # Inline any suitable function
+<     )
+---
+>     -O2
+>   )
+> 
+430,431c428,434
+<     /std:c++20    # Use the C++20 language standard
+<     )
+---
+>     -std=c++20
+>     -fno-exceptions
+>     -fno-rtti
+>     -fno-threadsafe-statics
+>   )
+> 
+>   # Linker flags
+433,434c436,437
+<     /DEBUG        # Generate debug information
+<     )
+---
+>     -g
+>   )
+436,512d438
+<   # Delayload most libraries as the dlls are simply not required at startup (or
+<   # at all, depending on the process type). Some dlls open handles when they are
+<   # loaded, and we may not want them to be loaded in renderers or other sandboxed
+<   # processes. Conversely, some dlls must be loaded before sandbox lockdown. In
+<   # unsandboxed processes they will load when first needed. The linker will
+<   # automatically ignore anything which is not linked to the binary at all (it is
+<   # harmless to have an unmatched /delayload). Lists should be kept in sync with
+<   # targets from Chromium's //build/config/win/BUILD.gn file.
+<   set(CEF_DELAYLOAD_FLAGS
+<     # Required to support CefScopedLibraryLoader.
+<     /DELAYLOAD:libcef.dll
+< 
+<     # "delayloads" target.
+<     /DELAYLOAD:api-ms-win-core-synch-l1-2-0.dll
+<     /DELAYLOAD:api-ms-win-core-winrt-error-l1-1-0.dll
+<     /DELAYLOAD:api-ms-win-core-winrt-l1-1-0.dll
+<     /DELAYLOAD:api-ms-win-core-winrt-string-l1-1-0.dll
+<     /DELAYLOAD:advapi32.dll
+<     /DELAYLOAD:bcryptprimitives.dll
+<     /DELAYLOAD:comctl32.dll
+<     /DELAYLOAD:comdlg32.dll
+<     /DELAYLOAD:credui.dll
+<     /DELAYLOAD:cryptui.dll
+<     /DELAYLOAD:d3d11.dll
+<     /DELAYLOAD:d3d12.dll
+<     /DELAYLOAD:d3d9.dll
+<     /DELAYLOAD:dbghelp.dll
+<     /DELAYLOAD:dcomp.dll
+<     /DELAYLOAD:dwmapi.dll
+<     /DELAYLOAD:dxgi.dll
+<     /DELAYLOAD:dxva2.dll
+<     /DELAYLOAD:esent.dll
+<     /DELAYLOAD:fontsub.dll
+<     /DELAYLOAD:gdi32.dll
+<     /DELAYLOAD:hid.dll
+<     /DELAYLOAD:imagehlp.dll
+<     /DELAYLOAD:imm32.dll
+<     /DELAYLOAD:mmdevapi.dll
+<     /DELAYLOAD:msi.dll
+<     /DELAYLOAD:netapi32.dll
+<     /DELAYLOAD:ncrypt.dll
+<     /DELAYLOAD:ole32.dll
+<     /DELAYLOAD:oleacc.dll
+<     /DELAYLOAD:oleaut32.dll
+<     /DELAYLOAD:pdh.dll
+<     /DELAYLOAD:propsys.dll
+<     /DELAYLOAD:psapi.dll
+<     /DELAYLOAD:rpcrt4.dll
+<     /DELAYLOAD:rstrtmgr.dll
+<     /DELAYLOAD:setupapi.dll
+<     /DELAYLOAD:shell32.dll
+<     /DELAYLOAD:shlwapi.dll
+<     /DELAYLOAD:uiautomationcore.dll
+<     /DELAYLOAD:urlmon.dll
+<     /DELAYLOAD:user32.dll
+<     /DELAYLOAD:usp10.dll
+<     /DELAYLOAD:uxtheme.dll
+<     /DELAYLOAD:wer.dll
+<     /DELAYLOAD:wevtapi.dll
+<     /DELAYLOAD:wininet.dll
+<     /DELAYLOAD:winusb.dll
+<     /DELAYLOAD:wsock32.dll
+<     /DELAYLOAD:wtsapi32.dll
+< 
+<     # "delayloads_not_for_child_dll" target.
+<     /DELAYLOAD:crypt32.dll
+<     /DELAYLOAD:dhcpcsvc.dll
+<     /DELAYLOAD:dwrite.dll
+<     /DELAYLOAD:iphlpapi.dll
+<     /DELAYLOAD:secur32.dll
+<     /DELAYLOAD:userenv.dll
+<     /DELAYLOAD:winhttp.dll
+<     /DELAYLOAD:winmm.dll
+<     /DELAYLOAD:winspool.drv
+<     /DELAYLOAD:wintrust.dll
+<     /DELAYLOAD:ws2_32.dll
+<     )
+514,518c440,443
+<     # For executable targets.
+<     /MANIFEST:NO        # No default manifest (see ADD_WINDOWS_MANIFEST macro usage)
+<     /LARGEADDRESSAWARE  # Allow 32-bit processes to access 3GB of RAM
+<     ${CEF_DELAYLOAD_FLAGS}
+<     )
+---
+>     -Wl,--nxcompat
+>     -Wl,--dynamicbase
+>   )
+> 
+520,522c445,449
+<     # For shared library targets.
+<     ${CEF_DELAYLOAD_FLAGS}
+<     )
+---
+>     -Wl,--nxcompat
+>     -Wl,--dynamicbase
+>   )
+> 
+>   # Defines
+524,528c451,452
+<     WIN32 _WIN32 _WINDOWS             # Windows platform
+<     UNICODE _UNICODE                  # Unicode build
+<     # Targeting Windows 10. We can't say `=_WIN32_WINNT_WIN10` here because
+<     # some files do `#if WINVER < 0x0600` without including windows.h before,
+<     # and then _WIN32_WINNT_WIN10 isn't yet known to be 0x0A00.
+---
+>     WIN32 _WIN32 _WINDOWS
+>     UNICODE _UNICODE
+531,535c455,459
+<     NTDDI_VERSION=NTDDI_WIN10_FE
+<     NOMINMAX                          # Use the standard's templated min/max
+<     WIN32_LEAN_AND_MEAN               # Exclude less common API declarations
+<     _HAS_EXCEPTIONS=0                 # Disable exceptions
+<     )
+---
+>     NOMINMAX
+>     WIN32_LEAN_AND_MEAN
+>     _HAS_EXCEPTIONS=0
+>   )
+> 
+537,538c461,462
+<     NDEBUG _NDEBUG                    # Not a debug build
+<     )
+---
+>     NDEBUG _NDEBUG
+>   )
+539a464
+>   # Stack size (linker)
+541,546d465
+<     # Set the initial stack size to 0.5MiB, instead of the 1.5MiB minimum
+<     # needed by CEF's main thread. This saves significant memory on threads
+<     # (like those in the Windows thread pool, and others) whose stack size we
+<     # can only control through this setting. The main thread (in 32-bit builds
+<     # only) uses fibers to switch to a 4MiB stack at runtime via
+<     # CefRunWinMainWithPreferredStackSize().
+548,549c467,468
+<       /STACK:0x80000
+<       )
+---
+>       -Wl,--stack,524288   # 0.5 MiB
+>     )
+551d469
+<     # Increase the initial stack size to 8MiB from the default 1MiB.
+553,554c471,472
+<       /STACK:0x800000
+<       )
+---
+>       -Wl,--stack,8388608  # 8 MiB
+>     )
+557c475
+<   # Standard libraries.
+---
+>   # Standard libraries (MinGW names)
+559,568c477,484
+<     comctl32.lib
+<     crypt32.lib
+<     delayimp.lib
+<     gdi32.lib
+<     rpcrt4.lib
+<     shlwapi.lib
+<     wintrust.lib
+<     ws2_32.lib
+<     )
+< 
+---
+>     -lcomctl32
+>     -lcrypt32
+>     -lgdi32
+>     -lrpcrt4
+>     -lshlwapi
+>     -lwintrust
+>     -lws2_32
+>   )

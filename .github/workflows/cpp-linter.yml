@@ -9,13 +9,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: libsdl-org/setup-sdl@main
-        id: sdl
-        with:
-          install-linux-dependencies: true
-          version: 3-latest
-          version-sdl-image: 3-latest
-
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -29,8 +22,8 @@ jobs:
       - name: Download and generate dependencies, and build
         run: | 
           git submodule update --init --recursive
-          python3 dev/download_cef.py
-          cmake -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          python3 dev/tools/download_cef.py
+          cmake -B build -G Ninja
 
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
